@@ -1,0 +1,30 @@
+
+ #############    Result report    (Time: 17-01_18h45) seed:12345 #############
+Dataset: elliptic 
+Type task: graph_anomaly 
+size of the search space = : 5529600
+Encoding method: one_hot
+Node feature size: total_choices
+Type predictor training graph data: directed
+Predictor dataset type: graph
+Type of sampling : controlled_stratified_sampling
+Use parallel = : no
+
+Total budget: 60
+Number of samples: 45
+Number of TopK models: 10
+Best model: {'gnnConv1': 'linear', 'gnnConv2': 'GraphConv', 'aggregation1': 'max', 'aggregation2': 'max', 'normalize1': 'GraphNorm', 'normalize2': 'InstanceNorm', 'activation1': 'Softplus', 'activation2': 'Elu', 'multi_head1': 1, 'multi_head2': 1, 'hidden_channels1': 32, 'hidden_channels2': 32, 'dropout1': 0.2, 'dropout2': 0.2, 'lr': 0.005, 'weight_decay': 0.0005, 'optimizer': 'adam', 'criterion': 'fn_loss'}
+predictor train R2_Score= 0.59 
+predictor val R2_Score= -0.07 
+predictor train pearson_corr= 0.89 
+predictor val pearson_corr= -0.29 
+predictor train kendall_corr= 0.7 
+predictor val kendall_corr= -0.5 
+predictor train spearman_corr= 0.82 
+predictor val spearman_corr= -0.6 
+
+best_auc_pr= 56.99 +/-0.0  
+best_auc_roc= 65.03 +/-0.0  
+-------------------------------------------------
+
+ 
