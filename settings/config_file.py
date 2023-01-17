@@ -34,7 +34,7 @@ def set_seed(num_seed=num_seed):
 project_root_dir = os.path.abspath(os.getcwd())
 
 type_task = "graph_anomaly"  # it could be "graph classification", "link prediction",node classification
-dataset_name = "elliptic"  # Citeseer,
+dataset_name = "yelp"  # Citeseer,
 
 
 # Second  level of  running configurations
@@ -56,16 +56,16 @@ def create_config_file():
         "project_dir": project_root_dir,
         'config_filename': config_filename,
         "run_code": RunCode,
-        "budget": 60,
-        "k": 10,
+        "budget": 600,
+        "k": 100,
         "z_sample": 1,  # Number of time  sampled models are trained before we report their performance
         "z_topk": 1,
         "z_final": 5,
         "nfcode": 56,  # number of digit for each function code when using embedding method
         "noptioncode": 8,
-        "sample_model_epochs": 2,
-        "topk_model_epochs": 2,
-        "best_model_epochs": 2,
+        "sample_model_epochs": 200,
+        "topk_model_epochs": 200,
+        "best_model_epochs": 200,
         "encoding_method": "one_hot",  # ={one_hot, embedding,index_embedding}
         "type_sampling": "controlled_stratified_sampling",  # random_sampling, uniform_sampling, controlled_stratified_sampling
         "predictor_dataset_type": "graph",
@@ -73,8 +73,8 @@ def create_config_file():
         'type_input_graph': "directed",
         "use_paralell": "no",
         "learning_type": "supervised",
-        "predict_sample": 5000,
-        "batch_sample": 1000
+        "predict_sample": 500000,
+        "batch_sample": 10000
     }
 
     config["predictor"] = {
@@ -83,7 +83,7 @@ def create_config_file():
         "drop_out": 0.2,
         "lr": 0.001,
         "wd": 0.0005,
-        "num_epoch": 50,
+        "num_epoch": 500,
         "comit_test": "yes"
 
     }
