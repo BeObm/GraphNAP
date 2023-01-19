@@ -9,7 +9,8 @@ import torch.nn.functional as F
 from torch_geometric.nn import MessagePassing
 import inspect
 from torch.nn import Linear, ReLU, Sequential
-from sklearn.metrics import accuracy_score#, precision_score, recall_score
+from search_algo.utils import *
+# from sklearn.metrics import accuracy_score#, precision_score, recall_score
 from settings.config_file import *
 set_seed()  
 
@@ -162,12 +163,20 @@ def train_function(model, train_loader,criterion,optimizer):
 
 @torch.no_grad()
 def test_function(model,test_loader,paralell=True):
-
+    performance_scores ={}
     model.eval()
     correct = 0
     for data in test_loader:  # Iterate in batches over the training/test dataset.
         data=data.to(device)
         pred = model(data).max(dim=1)[1]
-        correct += pred.eq(data.y).sum().item()
-    return round(correct / len(test_loader.dataset) *100,2)
+
+        acc_score_ = acc_score(data.y, pred)
+        balanced_acc_score_ = balanced_acc_score(data.y, pred)
+        matthews_corrcoef = mcc_score(data.y, pred)
+
+        performance_scores["accuracy_score"] = acc_score_
+        performance_scores["balanced_accuracy_score"] = balanced_acc_score_
+        performance_scores["matthews_corr_coef"] = matthews_corrcoef
+
+        return performance_scores
 

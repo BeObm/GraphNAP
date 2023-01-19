@@ -19,9 +19,8 @@ set_seed()
 def get_dataset(type_task, dataset_root, dataset_name,normalize_features=True, transform=None):
     set_seed()
     support_dataset_list ={"node_classification":["Cora", "Citeseer", "Pubmed"],
-                           "graph_classification":["DD","PROTEINS","ENZYMES"],
+                           "graph_classification":["DD","PROTEINS","ENZYMES","BZR"],
                            "graph_anomaly":["yelp","elliptic"]
-
                            }
     if dataset_name in support_dataset_list[type_task]:
 
@@ -34,7 +33,7 @@ def get_dataset(type_task, dataset_root, dataset_name,normalize_features=True, t
             elif transform is not None:
                 dataset.transform = transform
 
-        elif dataset_name in ["DD","PROTEINS","ENZYMES"]:
+        elif dataset_name in ["DD","PROTEINS","ENZYMES","BZR"]:
             dataset = TUDataset(root=dataset_root, name=dataset_name) #,use_node_attr=True,use_edge_attr=True
         elif dataset_name == 'molecule':
             dataset=MoleculeDataset(dataset_root, dataset_name)
@@ -43,6 +42,9 @@ def get_dataset(type_task, dataset_root, dataset_name,normalize_features=True, t
         elif dataset_name in ["yelp","elliptic"]:
             dataset = pickle.load(open(f'{dataset_root}/{dataset_name}.dat', 'rb'))
             dataset.num_classes=2
+        else:
+            print(f"@@@@@@@@@@  The code for loading  {dataset_name} dataset is not implemented")
+            sys.exit()
     else:
         print(f"@@@@@@@@@@  The {dataset_name} dataset is not supported for {type_task} by the current version ")
         sys.exit()

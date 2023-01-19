@@ -4,7 +4,7 @@
 from settings.config_file import *
 import os
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_auc_score, average_precision_score, auc, precision_recall_curve
+from sklearn.metrics import roc_auc_score, average_precision_score, auc, precision_recall_curve,matthews_corrcoef, balanced_accuracy_score,accuracy_score
 
 
 
@@ -27,6 +27,25 @@ def aucPerformance(y_true, y_pred):
     auc_pr = auc(recall, precision)
     return roc_auc*100, auc_pr*100
 
+
+def mcc_score(y_true, y_pred):
+    y_true = y_true.flatten().cpu()
+    y_pred = y_pred.flatten().cpu()
+    mcc = matthews_corrcoef(y_true, y_pred)
+
+    return mcc
+
+def balanced_acc_score(y_true, y_pred):
+    y_true = y_true.flatten().cpu()
+    y_pred = y_pred.flatten().cpu()
+    balanced_acc = balanced_accuracy_score(y_true, y_pred)
+    return balanced_acc
+
+def acc_score(y_true, y_pred):
+    y_true = y_true.flatten().cpu()
+    y_pred = y_pred.flatten().cpu()
+    acc_score = accuracy_score(y_true, y_pred)
+    return acc_score
 
 def build_feature(function,option,num_function,e_search_space): # creer les feature d un graph provenant d un submodel
     type_encoding= config["param"]["encoding_method"] 
@@ -96,7 +115,7 @@ def get_edge_index(model_config):
     edge_dict['normalize2']=["dropout2",'activation2']
     edge_dict['dropout2']=["activation2"]
    
-    if config["dataset"]['type_task']=="graph classification":
+    if config["dataset"]['type_task']=="graph_classification":
         edge_dict['activation2']= ["pooling"]
         edge_dict['pooling']=['criterion']
     else:

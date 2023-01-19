@@ -33,8 +33,8 @@ def set_seed(num_seed=num_seed):
 
 project_root_dir = os.path.abspath(os.getcwd())
 
-type_task = "graph_anomaly"  # it could be "graph classification", "link prediction",node classification
-dataset_name = "yelp"  # Citeseer,
+type_task = "graph_classification"  # it could be "graph classification", "link prediction",node classification
+dataset_name = "BZR"  # Citeseer,
 
 
 # Second  level of  running configurations
@@ -56,16 +56,17 @@ def create_config_file():
         "project_dir": project_root_dir,
         'config_filename': config_filename,
         "run_code": RunCode,
-        "budget": 600,
-        "k": 100,
+        "budget": 60,
+        "k": 10,
         "z_sample": 1,  # Number of time  sampled models are trained before we report their performance
         "z_topk": 1,
         "z_final": 5,
         "nfcode": 56,  # number of digit for each function code when using embedding method
         "noptioncode": 8,
-        "sample_model_epochs": 200,
-        "topk_model_epochs": 200,
-        "best_model_epochs": 200,
+        "sample_model_epochs": 20,
+        "topk_model_epochs": 20,
+        "best_model_epochs": 20,
+        'search_metric':"accuracy_score",
         "encoding_method": "one_hot",  # ={one_hot, embedding,index_embedding}
         "type_sampling": "controlled_stratified_sampling",  # random_sampling, uniform_sampling, controlled_stratified_sampling
         "predictor_dataset_type": "graph",

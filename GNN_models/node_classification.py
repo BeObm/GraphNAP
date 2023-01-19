@@ -9,7 +9,7 @@ from torch_geometric.nn import MessagePassing
 import inspect 
 from settings.config_file import *
 set_seed()
-from search_algo.utils import aucPerformance
+from search_algo.utils import *
  
 class GNN_Model(MessagePassing):
     def __init__(self, param_dict):
@@ -218,6 +218,7 @@ def train_function(model,data,criterion,optimizer):
 
 @torch.no_grad()
 def test_function(model,data,typ="val"):
+    performance_scores={}
     model.eval()
     data=data.to(device)
     out=model(data)
@@ -226,10 +227,15 @@ def test_function(model,data,typ="val"):
     if typ=='test':
         mask=data.test_mask.bool()
     pred=out.argmax(dim=1)
-    auc_roc, auc_pr =aucPerformance(data.y[mask],pred[mask])
+    # auc_roc, auc_pr =aucPerformance(data.y[mask],pred[mask])
+    acc_score = acc_score(data.y[mask],pred[mask])
+    balanced_acc_score = balanced_acc_score(data.y[mask],pred[mask])
+    matthews_corrcoef =mcc_score(data.y[mask],pred[mask])
 
-    # test_correct= pred[mask]==data.y[mask]
-    # test_acc=int(test_correct.sum())/int(mask.sum())
-    return auc_roc, auc_pr
+    performance_scores["accuracy_score"]=acc_score
+    performance_scores["balanced_accuracy_score"] = balanced_acc_score
+    performance_scores["matthews_corr_coef"] = matthews_corrcoef
+
+    return performance_scores
 
 

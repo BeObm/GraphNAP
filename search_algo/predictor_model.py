@@ -37,11 +37,11 @@ from settings.config_file import *
 set_seed()
 
 
-def get_prediction(performance_records,e_search_space):
+def get_prediction(performance_records_path,e_search_space):
     if (config["param"]["predictor_dataset_type"])=="graph":
-       TopK_final= get_prediction_from_graph(performance_records,e_search_space)
+       TopK_final= get_prediction_from_graph(e_search_space)
     elif (config["param"]["predictor_dataset_type"])=="table":
-       TopK_final= get_prediction_from_table(performance_records,e_search_space)
+       TopK_final= get_prediction_from_table(performance_records_path,e_search_space)
     return TopK_final
  
     
@@ -166,8 +166,8 @@ def predict_accuracy_using_graph(model,graphLoader):
 
 
 
-def get_prediction_from_graph(performance_record, e_search_space):
-     
+def get_prediction_from_graph(e_search_space):
+   search_metric = config["param"]["search_metric"]
    dim=int(config["predictor"]["dim"])
    drop_out=float(config["predictor"]["drop_out"])
    lr=float(config["predictor"]["lr"]) 
@@ -244,7 +244,7 @@ def get_prediction_from_graph(performance_record, e_search_space):
    best_model.load_state_dict(torch.load(best_loss_param_path))      
    
    R2_Score_tr,pearson_tr,kendall_tr,spearman_tr = testpredictor(best_model,train_loader,title="Predictor training test")
-   good_predictor=model  
+   # good_predictor=model
    add_config("results","R2_Score_train", R2_Score_tr)
    add_config("results","pearson_train", pearson_tr)
    add_config("results","kendall_train", kendall_tr)
@@ -307,7 +307,7 @@ def get_prediction_from_graph(performance_record, e_search_space):
           TopK_models.append(TopK)
                      
    TopK_model = pd.concat(TopK_models)  
-   TopK_model=TopK_model.nlargest(k,'Accuracy',keep="all")
+   TopK_model=TopK_model.nlargest(k,search_metric,keep="all")
    TopK_final=TopK_model[:k]
    
    prediction_time= round(time.time() - start_predict_time,2)
@@ -329,9 +329,10 @@ def get_prediction_from_table(performance_record, e_search_space):
    lb_make = LabelEncoder()
    performance_record = pd.read_csv(performance_record)
    df=performance_record
+   search_metric = config["param"]["search_metric"]
    # df =(df-df.mean())/df.std()
    x=df.iloc[:, :-1]  
-   y= df["Accuracy"]  
+   y= df[search_metric]
   
    # if config["param"]["encoding_method"] =="embedding":
    #         x =round((x-x.mean())/x.std(),5)
@@ -405,11 +406,7 @@ def get_prediction_from_table(performance_record, e_search_space):
        regr_.write(f"regression with AdaboostRegressor gives R2 score={r2_tr1}|r={pearson_tr1}|rho={spearman_tr1}|tau={kendall_tr1}\n")
        regr_.write(f"regression with MLP gives R2 score={r2_tr3}|r={pearson_tr3}|rho={spearman_tr3}|tau={kendall_tr3}\n")
        regr_.write(f"regression with SGD gives R2 score={r2_tr4}|r={pearson_tr4}|rho={spearman_tr4}|tau={kendall_tr4}\n")
-   
-    
-    
-  
-    
+
    regr=regr2
    R2_Score_tr =r2_tr2
    pearson_tr= pearson_tr2
@@ -417,9 +414,7 @@ def get_prediction_from_table(performance_record, e_search_space):
    spearman_tr =spearman_tr2
    regressor="RandomForestRegressor"
    df=df1     
- 
-   
-   
+
    print(f"Selected regressor: {regressor} --R2_Score = {R2_Score_tr}")
  
    predictor_training_time = round(time.time() - start_train_time,2)
@@ -468,14 +463,14 @@ def get_prediction_from_table(performance_record, e_search_space):
                  df_temp[col]=lb_make.fit_transform(df_temp[col])
     
          predicted_accuracy = regr.predict(df_temp)
-         df['Accuracy']=predicted_accuracy
-         TopK=df.nlargest(k,'Accuracy',keep="all")
+         df[search_metric]=predicted_accuracy
+         TopK=df.nlargest(k,search_metric,keep="all")
          TopK=TopK[:k]
          TopK_model.append(TopK)
 
    TopK_models = pd.concat(TopK_model)  
   
-   TopK_models=TopK_models.nlargest(k,'Accuracy',keep="all")
+   TopK_models=TopK_models.nlargest(k,search_metric,keep="all")
    TopK_final=TopK_models[:k].sample(frac=1).reset_index(drop=True) 
    prediction_time= round(time.time() - start_predict_time,2)
    print(TopK_final)  
@@ -484,7 +479,7 @@ def get_prediction_from_table(performance_record, e_search_space):
    return TopK_final
 
 def evaluate_model_predictor(y_train,  y_pred,title="Predictor training"):
-
+   search_metric = config["param"]["search_search_metric"]
    dataset_name =config["dataset"]["dataset_name"]
    n_sample =int(config["param"]["N"])
    # now =config["param"]["now"]
@@ -527,10 +522,9 @@ def evaluate_model_predictor(y_train,  y_pred,title="Predictor training"):
    plt.plot(lst,  lst,  color='black', linewidth=0.6)
    plt.scatter(y_train, y_pred,  color=col, linewidth=0.8)
 
-   
    plt.title(f'(r={round(pearson,2)},rho={round(spearmanr,2)},tau={kendalltau})',y=1.02,size=28,fontname="Arial Black")#,R2_Score={R2_Score}
-   plt.xlabel(f'True Accuracy',fontsize=28,fontname="Arial Black")
-   plt.ylabel(f'Predicted Accuracy',fontsize=28,fontname="Arial Black")#,fontweight = 'bold'
+   plt.xlabel(f'True {search_metric}',fontsize=28,fontname="Arial Black")
+   plt.ylabel(f'Predicted {search_metric}',fontsize=28,fontname="Arial Black")#,fontweight = 'bold'
    # plt.legend()
    plt.grid()
    plt.show()

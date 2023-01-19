@@ -15,7 +15,7 @@ from GNN_models.graph_classification import *
 
 
 
-def get_test_accuracy(submodel, dataset):
+def get_test_performance(submodel, dataset):
 
     z_final= int(config["param"]["z_final"])
     type_task =config["dataset"]["type_task"]
@@ -37,9 +37,7 @@ def get_test_accuracy(submodel, dataset):
    
       
     model, criterion, optimizer =get_model_instance2(submodel, dataset,gcn)
-    auc_roc_list=[]
-    auc_pr_list = []
-
+    test_performances_record = defaultdict(list)
     set_seed()
     for i in range(z_final):                
         best_loss =999
@@ -54,20 +52,14 @@ def get_test_accuracy(submodel, dataset):
         best_model, criterion, optimizer =get_model_instance2(submodel, dataset,gcn)
         best_model.load_state_dict(torch.load(best_loss_param_path))
 
-        auc_roc, auc_pr= test_model(best_model, val_loader)  # test_loader
+        performances= test_model(best_model, val_loader)  # test_loader
 
-        auc_pr_list.append(auc_pr)
-        auc_roc_list.append(auc_roc)
-    auc_pr = round(stat.mean(auc_pr_list),2)
-    auc_roc = round(stat.mean(auc_roc_list), 2)
-    auc_pr_std=round(np.std(auc_pr_list,dtype = np.float64),2)
-    auc_roc_std = round(np.std(auc_roc_list, dtype=np.float64), 2)
+        for k,v in performances.items():
+            test_performances_record[k].append(v)
+    for metric, performance in test_performances_record.items():
+        test_performances_record[metric]=round(stat.mean(performance),2)
+        test_performances_record[f"{metric}_std"] = round(np.std(performance, dtype=np.float64), 2)
+        add_config("results", metric, test_performances_record[metric])
+        add_config("results", f"{metric}_std", test_performances_record[f"{metric}_std"])
 
-
-    add_config("results","best_auc_pr",auc_pr)
-    add_config("results", "best_auc_roc", auc_roc)
-    add_config("results","std_auc_pr",auc_pr_std)
-    add_config("results", "std_auc_roc", auc_roc_std)
-    
-    return auc_pr,auc_pr_std
-         
+    return test_performances_record

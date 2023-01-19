@@ -29,13 +29,14 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
     type_task =config["dataset"]["type_task"]
     epochs =int(config["param"]["sample_model_epochs"])
     n_sample =int(config["param"]["N"]) 
-    
+    search_metric =config["param"]["search_metric"]
+
     timestart = time.time()
     print(f' \n Getting performance accuracy  of  {n_sample} models ...\n')
 
     gcn,train_model,test_model=get_train(type_task)
     nummodel=1
-    best_sample_acc=0
+    best_performance=0
     model_list = sample_models(n_sample, e_search_space)
     edge_index = get_edge_index(model_list[0])
     # print("example of model_config", model_list[0])
@@ -50,27 +51,25 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
 
             model, criterion, optimizer =get_model_instance(submodel, dataset,gcn)
             
-
-            
-            accuracy_list=[]
+            performance_record=[]
 
             for i in range(z_sample):
                 set_seed()
                 for epoch in range(epochs):                                            
                    loss =train_model(model,train_loader, criterion, optimizer)
-                   auc_roc, auc_pr= test_model(model, val_loader)
-                accuracy_list.append(auc_pr)
-            auc_pr = round(stat.mean(accuracy_list),2)
+                   performance_score= test_model(model, val_loader)
+                performance_record.append(performance_score[search_metric])
+            model_performance = round(stat.mean(performance_record),2)
             
            
-            if auc_pr >best_sample_acc:
-                best_sample_acc=auc_pr
+            if model_performance >best_performance:
+                best_performance=model_performance
                 best_sample=copy.deepcopy(submodel)
-                best_sample["Accuracy"]=auc_pr
-                print(f'-->  auc_pr = {auc_pr}%  ===++ Actual Best Performance')
+                best_sample[search_metric]=best_performance
+                print(f'-->  {search_metric} = {model_performance}  ===++ Actual Best Performance')
                   
             else :
-                  print(f'--> auc_pr = {auc_pr}%')
+                  print(f'--> {search_metric} = {model_performance}')
             print([submodel[opt][0] for opt in submodel.keys()])
             
 
@@ -78,7 +77,7 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
             if (config["param"]["predictor_dataset_type"])=="graph":
                 # edge_index=get_edge_index(model_list[0])
                 x = get_nodes_features(submodel,e_search_space)
-                y=np.array(auc_pr)
+                y=np.array(model_performance)
                 y=torch.tensor(y,dtype=torch.float32).view(-1,1)
                 graphdata=Data(x=x,edge_index =edge_index,y=y,num_nodes=x.shape[0],model_config_choices = deepcopy(submodel))
                 graph_list.append(graphdata)                                   
@@ -90,14 +89,14 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
                        predictor_dataset[function].append(option[0])
                     elif config["param"]["encoding_method"] =="embedding":
                        predictor_dataset[function].append(option[2])
-                predictor_dataset["Accuracy"].append(val_acc)
+                predictor_dataset[search_metric].append(val_acc)
             nummodel+=1      
                  
                              
                 
     sample_time= round(time.time() - timestart,2)
     add_config("time","distribution_time",sample_time)
-    add_config("results","best_sample_acc",best_sample_acc)
+    add_config("results",f"best_{search_metric}",best_performance)
     
     if (config["param"]["predictor_dataset_type"])=="graph":
                  
@@ -237,7 +236,7 @@ def get_model_instance(submodel,dataset,GCN):
     param_dict["multi_head2"] = submodel["multi_head2"][0]
     param_dict['activation1']=map_activation_function(submodel['activation1'][0])
     param_dict['activation2']=map_activation_function(submodel['activation2'][0])
-    if type_task=='graph classification':
+    if type_task=='graph_classification':
         param_dict["global_pooling"]=map_pooling(submodel['pooling'][0])
     param_dict['type_task'] =type_task
     param_dict["gnnConv1"]=map_gnn_model(submodel['gnnConv1'][0])
@@ -273,7 +272,7 @@ def get_model_instance2(submodel,dataset,GCN):
     param_dict["multi_head2"] = submodel["multi_head2"]
     param_dict['activation1']=map_activation_function(submodel['activation1'])
     param_dict['activation2']=map_activation_function(submodel['activation2'])
-    if type_task=='graph classification':
+    if type_task=='graph_classification':
         param_dict["global_pooling"]=map_pooling(submodel['pooling'])
     param_dict['type_task'] =type_task
     param_dict["gnnConv1"]=map_gnn_model(submodel['gnnConv1'])

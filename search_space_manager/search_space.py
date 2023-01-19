@@ -40,7 +40,7 @@ def create_e_search_space(a=0,b=1):   # a<b
     sp["optimizer"] = ["adam"]
     sp['criterion'] = ['CrossEntropyLoss',"fn_loss"]
 
-    if type_task=='graph classification':
+    if type_task=='graph_classification':
         sp['pooling'] = ["global_add_pool","global_max_pool"]
     # elif type_task=='node classification' or type_task=="link prediction":
     #   sp['normalize1'] =["False","InstanceNorm"]
