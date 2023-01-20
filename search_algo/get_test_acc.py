@@ -56,10 +56,11 @@ def get_test_performance(submodel, dataset):
 
         for k,v in performances.items():
             test_performances_record[k].append(v)
+    test_performances_records={}
     for metric, performance in test_performances_record.items():
-        test_performances_record[metric]=round(stat.mean(performance),2)
-        test_performances_record[f"{metric}_std"] = round(np.std(performance, dtype=np.float64), 2)
-        add_config("results", metric, test_performances_record[metric])
-        add_config("results", f"{metric}_std", test_performances_record[f"{metric}_std"])
+        test_performances_records[metric]=round(stat.mean(performance),2)
+        test_performances_records[f"{metric}_std"] = round(np.std(performance, dtype=np.float64), 2)
+        add_config("results", metric, test_performances_records[metric])
+        add_config("results", f"{metric}_std", test_performances_records[f"{metric}_std"])
 
     return test_performances_record

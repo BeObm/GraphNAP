@@ -8,3 +8,4 @@ data/graph_anomaly/yelp.dat
 *.pth
 *.pyc
 *.pyc
+*.txt

@@ -32,7 +32,7 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
     search_metric =config["param"]["search_metric"]
 
     timestart = time.time()
-    print(f' \n Getting performance accuracy  of  {n_sample} models ...\n')
+    print(f' \n Getting {search_metric}  of  {n_sample} models ...\n')
 
     gcn,train_model,test_model=get_train(type_task)
     nummodel=1
@@ -56,7 +56,7 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
             for i in range(z_sample):
                 set_seed()
                 for epoch in range(epochs):                                            
-                   loss =train_model(model,train_loader, criterion, optimizer)
+                   train_model(model,train_loader, criterion, optimizer)
                    performance_score= test_model(model, val_loader)
                 performance_record.append(performance_score[search_metric])
             model_performance = round(stat.mean(performance_record),2)
@@ -89,7 +89,7 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
                        predictor_dataset[function].append(option[0])
                     elif config["param"]["encoding_method"] =="embedding":
                        predictor_dataset[function].append(option[2])
-                predictor_dataset[search_metric].append(val_acc)
+                predictor_dataset[search_metric].append(model_performance)
             nummodel+=1      
                  
                              
@@ -111,8 +111,8 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
     
 def get_best_model(topk_list,option_decoder,dataset):
 
-    
     torch.cuda.empty_cache()
+    search_metric = config["param"]["search_metric"]
     best_loss_param_path =f"{config['path']['performance_distribution_folder']}/best_dist_param.pth"
     set_seed()
     encoding_method =config["param"]["encoding_method"]
@@ -133,16 +133,16 @@ def get_best_model(topk_list,option_decoder,dataset):
             if Y < data.y.item():
                 Y = data.y.item()
                 submodel = data.model_config_choices
-            max_auc_pr = Y
-            max_auc_roc = 0
+            max_performace = Y
+
             bestmodel = copy.deepcopy(submodel)
 
             for k, v in bestmodel.items():
-                if k != "Accuracy":
+                if k != search_metric:
                     bestmodel[k] = v[0]
     except:
-        max_auc_pr =0
-        max_auc_roc = 0
+        max_performace =0
+
     for idx,row in tqdm(topk_list.iterrows()):
         dict_model={}   #
         
@@ -152,7 +152,7 @@ def get_best_model(topk_list,option_decoder,dataset):
     
         elif (config["param"]["predictor_dataset_type"])=="table":
             for function in topk_list.columns: 
-                if function !="Accuracy":
+                if function !=search_metric:
                     if config["param"]["encoding_method"] =="one_hot":
                       dict_model[function]=row[function]
                     elif config["param"]["encoding_method"] =="embedding":
@@ -168,8 +168,7 @@ def get_best_model(topk_list,option_decoder,dataset):
         except:
              model, criterion, optimizer =get_model_instance2(dict_model, dataset,task_model)
         
-        auc_roc_list=[]
-        auc_pr_list = []
+        performance_list=[]
 
         for i in range(z_topk):
             best_loss=999
@@ -182,24 +181,21 @@ def get_best_model(topk_list,option_decoder,dataset):
                   torch.save(model.state_dict(),best_loss_param_path )
                   
             #       # torch.save(model.state_dict(), f'{config["path"]["best_model_folder"]}/temp_model_dict.pth')  
-            best_model, criterion, optimizer =get_model_instance2(dict_model, dataset,task_model)
+            best_model, criterion, optimizer = get_model_instance2(dict_model, dataset,task_model)
             best_model.load_state_dict(torch.load(best_loss_param_path))          
                     
-            auc_roc, auc_pr= test_model(best_model, val_loader)
-            auc_pr_list.append(auc_pr)
-            auc_roc_list.append(auc_roc)
-        auc_pr = round(stat.mean(auc_pr_list),2)
-        auc_roc = round(stat.mean(auc_roc_list), 2)
-       
+            performance= test_model(best_model, val_loader)
+            performance_list.append(performance[search_metric])
+
+        performance = round(stat.mean(performance_list),2)
+
 
                  
-        if max_auc_pr <= auc_pr and max_auc_roc<=auc_roc:
-            max_auc_pr=auc_pr
-            max_auc_roc=auc_roc
+        if max_performace <= performance :
+            max_performace = performance
             bestmodel=copy.deepcopy(dict_model)
-    best_acc_time = round(time.time() - start_time,2)
-    add_config("time","best_acc_time",best_acc_time)
-   
+    get_best_model_time = round(time.time() - start_time,2)
+    add_config("time","get_best_model_time",get_best_model_time)
 
     return bestmodel       
 

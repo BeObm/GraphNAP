@@ -44,6 +44,6 @@ if __name__ == "__main__":
     best_model= get_best_model(TopK_final,option_decoder,dataset)
     total_search_time = round(time.time() - timestart, 2)
     add_config("time", "total_search_time", total_search_time)
-    get_test_performance(best_model,dataset)
-    write_results(best_model)  
+    performance = get_test_performance(best_model,dataset)
+    write_results(best_model,performance)
     # Generate_time_cost()

@@ -2,7 +2,7 @@
 
 from settings.config_file import *
 
-def write_results(best_model):
+def write_results(best_model, test_performances_record):
     
        k=int(config["param"]["k"])
     
@@ -35,8 +35,9 @@ def write_results(best_model):
 
             results.write(f'predictor train spearman_corr= {float(config["results"]["spearman_train"])} \n')
             results.write(f'predictor val spearman_corr= {float(config["results"]["spearman_val"])} \n\n')
-            results.write(f'best_auc_pr= {float(config["results"]["best_auc_pr"])} +/-{float(config["results"]["std_auc_pr"])}  \n')
-            results.write(f'best_auc_roc= {float(config["results"]["best_auc_roc"])} +/-{float(config["results"]["std_auc_roc"])}  \n')
+
+            for metric, performance in test_performances_record.items():
+                results.write(f'best_{metric}= {float(config["results"][metric])} +/-{float(config["results"][f"{metric}_std"])}  \n')
 
             results.write("-------------------------------------------------\n\n ")
            
@@ -67,9 +68,9 @@ def write_results(best_model):
        print(f'predictor train spearman= {float(config["results"]["spearman_train"])} \n')
        print(f'predictor val spearman= {float(config["results"]["spearman_val"])} \n')
 
-        
-       print(f'best_auc_pr= {float(config["results"]["best_auc_pr"])} +/-{float(config["results"]["std_auc_pr"])}  \n')
-       print(f'best_auc_roc= {float(config["results"]["best_auc_roc"])} +/-{float(config["results"]["std_auc_roc"])}  \n')
+       for metric, performance in test_performances_record.items():
+           print(f'best_{metric}= {float(config["results"][metric])} +/-{float(config["results"][f"{metric}_std"])}  \n')
+
        print("-------------------------------------------------\n\n ")
            
 

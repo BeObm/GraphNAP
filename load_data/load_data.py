@@ -1,3 +1,4 @@
+import random
 import sys
 
 import torch
@@ -16,10 +17,41 @@ print(f"Torch geometric version: {torch_geometric.__version__}")
 set_seed()
 
 
+class ShuffleDataset(torch.utils.data.IterableDataset):
+  def __init__(self, dataset, buffer_size):
+
+    super().__init__()
+    self.dataset = dataset
+    self.buffer_size = buffer_size
+
+  def __iter__(self):
+    set_seed()
+    shufbuf = []
+    try:
+      dataset_iter = iter(self.dataset)
+      for i in range(self.buffer_size):
+        shufbuf.append(next(dataset_iter))
+    except:
+      self.buffer_size = len(shufbuf)
+
+    try:
+      while True:
+        try:
+          item = next(dataset_iter)
+          evict_idx = random.randint(0, self.buffer_size - 1)
+          yield shufbuf[evict_idx]
+          shufbuf[evict_idx] = item
+        except StopIteration:
+          break
+      while len(shufbuf) > 0:
+        yield shufbuf.pop()
+    except GeneratorExit:
+      pass
+
 def get_dataset(type_task, dataset_root, dataset_name,normalize_features=True, transform=None):
     set_seed()
     support_dataset_list ={"node_classification":["Cora", "Citeseer", "Pubmed"],
-                           "graph_classification":["DD","PROTEINS","ENZYMES","BZR"],
+                           "graph_classification":["DD","PROTEINS","ENZYMES","BZR","COLLAB","IMBD-BINARY"],
                            "graph_anomaly":["yelp","elliptic"]
                            }
     if dataset_name in support_dataset_list[type_task]:
@@ -33,7 +65,7 @@ def get_dataset(type_task, dataset_root, dataset_name,normalize_features=True, t
             elif transform is not None:
                 dataset.transform = transform
 
-        elif dataset_name in ["DD","PROTEINS","ENZYMES","BZR"]:
+        elif dataset_name in ["DD","PROTEINS","ENZYMES","BZR","COLLAB","IMBD-BINARY"]:
             dataset = TUDataset(root=dataset_root, name=dataset_name) #,use_node_attr=True,use_edge_attr=True
         elif dataset_name == 'molecule':
             dataset=MoleculeDataset(dataset_root, dataset_name)
@@ -76,7 +108,7 @@ def load_dataset(dataset, batch_dim=Batch_Size):
 
     """
     type_task =config["dataset"]["type_task"]
-    set_seed()
+    set_seed(12345)
 
 
     if type_task == "node_classification":
@@ -88,11 +120,33 @@ def load_dataset(dataset, batch_dim=Batch_Size):
     elif type_task =="graph_anomaly":
         # test_loader = train_loader = val_loader = dataset
         test_loader = train_loader = val_loader = Load_nc_data(dataset)
-    else: 
-        n = int(len(dataset)*20/100)
-        test_dataset = dataset[:n]
-        val_dataset = dataset[n:2*n]
-        train_dataset = dataset[2*n:]
+    else:
+        dataset = ShuffleDataset(dataset,1024)
+        length=0
+        for d in dataset:
+            length=length+1
+        n = int(length * 20 / 100)
+        tmp_list= [a for a in range(length)]
+        random.shuffle(tmp_list)
+
+        test_dataset_idx = tmp_list[0:n]
+        val_dataset_idx =  tmp_list[n:2*n]
+        train_dataset_idx =  tmp_list[2*n:]
+
+        train_dataset =[]
+        val_dataset=[]
+        test_dataset =[]
+
+        for i,d in enumerate(dataset):
+            if i in train_dataset_idx:
+                train_dataset.append(d)
+            elif i in val_dataset_idx:
+                val_dataset.append(d)
+            elif i in test_dataset_idx:
+                test_dataset.append(d)
+            else:
+                continue
+
         train_loader = DataLoader(train_dataset, batch_size=batch_dim,shuffle=True)
         val_loader = DataLoader(val_dataset, batch_size=batch_dim,shuffle=False)
         test_loader = DataLoader(test_dataset, batch_size=batch_dim,shuffle=False)
@@ -100,6 +154,15 @@ def load_dataset(dataset, batch_dim=Batch_Size):
         add_config("dataset", "len_testdata", len(test_dataset))
         add_config("dataset", "len_valdata", len(val_loader))
 
+        for b in test_loader:
+           print("test with",b.y)
+           break
+        for b in val_loader:
+           print("val with",b.y)
+           break
+        for b in train_loader:
+           print("train with",b.y)
+           break
     return train_loader, val_loader, test_loader
 
 

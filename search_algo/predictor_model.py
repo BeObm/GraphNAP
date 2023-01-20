@@ -126,12 +126,12 @@ def testpredictor(model,loader,title):
 
  
 @torch.no_grad()
-def predict_accuracy_using_graph(model,graphLoader): 
-        
+def predict_accuracy_using_graph(model,graphLoader):
+        search_metric = config["param"]["search_metric"]
         model.eval()
         prediction_dict={}
         prediction_dict['model_config']=[]
-        prediction_dict["Accuracy"]=[]        
+        prediction_dict[search_metric]=[]
         k=int(config["param"]["k"])
         i=0
 
@@ -153,12 +153,12 @@ def predict_accuracy_using_graph(model,graphLoader):
                     temp_list.append((key, values[a][1]))
                 choice.append(temp_list)
             prediction_dict['model_config'].extend(choice)
-            prediction_dict["Accuracy"].extend(accuracy)
+            prediction_dict[search_metric].extend(accuracy)
             # print("choice is",choice)
             # print("acc=",round(float(model_acc[1].item()),2),"Acctype=",type(model_acc[1].item()))
 
         df = pd.DataFrame.from_dict(prediction_dict)
-        TopK=df.nlargest(n=k,columns='Accuracy',keep="all")
+        TopK=df.nlargest(n=k,columns=search_metric,keep="all")
         TopK=df[:k]
         # print(TopK)
         return TopK
@@ -186,7 +186,7 @@ def get_prediction_from_graph(e_search_space):
     if bestY< data.y.item():
         bestY=data.y.item()
         
-   print("best Y=",bestY)
+   print(f"best {search_metric}=",bestY)
    random.shuffle(graphlist)
   
    graph_list=graphlist[:n_sample]
@@ -195,7 +195,7 @@ def get_prediction_from_graph(e_search_space):
    val_dataset = graph_list[:val_size]
    train_dataset = graph_list[val_size:]
    
-   print("The size of the dataset is",len(graph_list))
+   print("The size of the predictor dataset is",len(graph_list))
    print(f" Predictor training dataset size is :{train_dataset[0].x.shape}")
    print(f'size of predictor training dataset: {len(train_dataset)}')
    print(f'size of predictor validation dataset: {len(val_dataset)}')
@@ -479,7 +479,7 @@ def get_prediction_from_table(performance_record, e_search_space):
    return TopK_final
 
 def evaluate_model_predictor(y_train,  y_pred,title="Predictor training"):
-   search_metric = config["param"]["search_search_metric"]
+   search_metric = config["param"]["search_metric"]
    dataset_name =config["dataset"]["dataset_name"]
    n_sample =int(config["param"]["N"])
    # now =config["param"]["now"]
