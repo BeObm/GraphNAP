@@ -62,7 +62,7 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
             model_performance = round(stat.mean(performance_record),2)
             
            
-            if model_performance >best_performance:
+            if model_performance =>best_performance:
                 best_performance=model_performance
                 best_sample=copy.deepcopy(submodel)
                 best_sample[search_metric]=best_performance
