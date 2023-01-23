@@ -16,23 +16,23 @@ from torch_geometric.nn import GraphNorm,DenseSAGEConv,DenseGraphConv,DenseGCNCo
 set_seed()
 
 def map_activation_function(function_name):
-    if function_name =='ReLU6':
+    if function_name.lower() =='relu6':
         return nn.ReLU6()
-    elif function_name == "linear":
+    elif function_name.lower() == "linear":
         return lambda x: x
-    elif function_name == "Elu":
+    elif function_name.lower() == "elu":
         return nn.ELU()
-    elif function_name == "Sigmoid":
+    elif function_name.lower() == "sigmoid":
         return nn.Sigmoid()
-    elif function_name == "Tanh":
+    elif function_name.lower() == "tanh":
         return nn.Tanh()
-    elif function_name =="leaky_relu":
+    elif function_name.lower() =="leaky_relu":
            return nn.LeakyReLU()
-    elif function_name =="PReLU":
+    elif function_name.lower() =="prelu":
            return nn.PReLU()  
-    elif function_name =="Softplus":
+    elif function_name.lower() =="softplus":
            return nn.Softplus() 
-    elif function_name =="Relu":
+    elif function_name.lower() =="relu":
            return nn.ReLU() 
     else:
         raise Exception(f"{function_name} is a wrong activate function")

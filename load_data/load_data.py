@@ -121,31 +121,13 @@ def load_dataset(dataset, batch_dim=Batch_Size):
         # test_loader = train_loader = val_loader = dataset
         test_loader = train_loader = val_loader = Load_nc_data(dataset)
     else:
-        dataset = ShuffleDataset(dataset,1024)
-        length=0
-        for d in dataset:
-            length=length+1
-        n = int(length * 20 / 100)
-        tmp_list= [a for a in range(length)]
-        random.shuffle(tmp_list)
-
-        test_dataset_idx = tmp_list[0:n]
-        val_dataset_idx =  tmp_list[n:2*n]
-        train_dataset_idx =  tmp_list[2*n:]
-
-        train_dataset =[]
-        val_dataset=[]
-        test_dataset =[]
-
-        for i,d in enumerate(dataset):
-            if i in train_dataset_idx:
-                train_dataset.append(d)
-            elif i in val_dataset_idx:
-                val_dataset.append(d)
-            elif i in test_dataset_idx:
-                test_dataset.append(d)
-            else:
-                continue
+        if config["dataset"]["shufle_dataset"]==True:
+            train_dataset, train_dataset, train_dataset =shuffle_dataset(dataset)
+        else:
+            n = int(len(dataset) * 20 / 100)
+            test_dataset = dataset[:n]
+            val_dataset = dataset[n:2 * n]
+            train_dataset = dataset[2 * n:]
 
         train_loader = DataLoader(train_dataset, batch_size=batch_dim,shuffle=True)
         val_loader = DataLoader(val_dataset, batch_size=batch_dim,shuffle=False)
@@ -153,19 +135,35 @@ def load_dataset(dataset, batch_dim=Batch_Size):
         add_config("dataset", "len_traindata", len(train_dataset))
         add_config("dataset", "len_testdata", len(test_dataset))
         add_config("dataset", "len_valdata", len(val_loader))
-
-        for b in test_loader:
-           print("test with",b.y)
-           break
-        for b in val_loader:
-           print("val with",b.y)
-           break
-        for b in train_loader:
-           print("train with",b.y)
-           break
     return train_loader, val_loader, test_loader
 
+def shuffle_dataset(dataset):
+    dataset = ShuffleDataset(dataset, 1024)
+    length = 0
+    for d in dataset:
+        length = length + 1
+    n = int(length * 20 / 100)
+    tmp_list = [a for a in range(length)]
+    random.shuffle(tmp_list)
 
+    test_dataset_idx = tmp_list[0:n]
+    val_dataset_idx = tmp_list[n:2 * n]
+    train_dataset_idx = tmp_list[2 * n:]
+
+    train_dataset = []
+    val_dataset = []
+    test_dataset = []
+
+    for i, d in enumerate(dataset):
+        if i in train_dataset_idx:
+            train_dataset.append(d)
+        elif i in val_dataset_idx:
+            train_dataset.append(d)
+        elif i in test_dataset_idx:
+            train_dataset.append(d)
+        else:
+            continue
+    return train_dataset,train_dataset,train_dataset
 
 def Load_nc_data(data,shuffle=True):
      

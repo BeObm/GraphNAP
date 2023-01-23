@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from settings.config_file import *
- 
+
 def create_e_search_space(a=0,b=1):   # a<b
 
     type_task=config['dataset']["type_task"]
@@ -13,7 +13,7 @@ def create_e_search_space(a=0,b=1):   # a<b
     attention= ["GCNConv","GENConv","SGConv","linear","GraphConv"]
 
     agregation=['add',"max","mean"]
-    activation=["elu","leaky_relu","linear","relu","relu6","sigmoid","softplus","tanh"]
+    activation=["elu","leaky_relu","Linear","relu","relu6","sigmoid","softplus","tanh"]
     multi_head=  [1, 2, 3, 4,6]
     hidden_channels =[8, 16, 32, 64,128]
     normalizer=["GraphNorm","InstanceNorm","BatchNorm"]

@@ -48,7 +48,8 @@ def create_config_file():
 
         "dataset_name": dataset_name,  # Citeseer,
         'type_task': type_task,  # it could be "graph classification", "link prediction",node classification
-        "dataset_root": f"{project_root_dir}/data/{type_task}"
+        "dataset_root": f"{project_root_dir}/data/{type_task}",
+        "shufle_dataset":False
     }
 
     # fill other configuration information
@@ -65,8 +66,8 @@ def create_config_file():
         "noptioncode": 8,
         "sample_model_epochs":100,
         "topk_model_epochs": 100,
-        "best_model_epochs": 200,
-        'search_metric':"accuracy_score",
+        "best_model_epochs": 100,
+        'search_metric':"balanced_accuracy_score",    #matthews_corr_coef, balanced_accuracy_score, accuracy_score
         "encoding_method": "one_hot",  # ={one_hot, embedding,index_embedding}
         "type_sampling": "controlled_stratified_sampling",  # random_sampling, uniform_sampling, controlled_stratified_sampling
         "predictor_dataset_type": "graph",
