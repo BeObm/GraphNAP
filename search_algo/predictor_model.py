@@ -454,7 +454,7 @@ def get_prediction_from_table(performance_record, e_search_space):
          df = df.sample(frac=1).reset_index(drop=True)  
          df_temp =df.copy(deep=True)
          # if config["param"]["encoding_method"] =="embedding":
-         #    df_temp =round((df_temp-df_temp.mean())/df_temp.std(),5)
+         #    df_temp =round((df_temp-df_temp.mean())/df_temp.std(),8)
            
          for col in df_temp.columns:
            if col in ['gnnConv1','gnnConv2',"aggregation1","aggregation2",'normalize1','normalize2','activation1','activation2','pooling','criterion',"optimizer"]:  # some function sets do not required do be categorized such as lr, dropout
@@ -485,11 +485,11 @@ def evaluate_model_predictor(y_train,  y_pred,title="Predictor training"):
    # now =config["param"]["now"]
    predictor_eval={}
    
-   # R2_Score=round(math.sqrt(mean_squared_error(y_train,  y_pred)),2)
-   pearson = round(stats.pearsonr(np.squeeze(y_train), np.squeeze(y_pred))[0],2)
-   kendalltau = round(stats.kendalltau(y_train, y_pred)[0],2)     
-   spearmanr = round(stats.spearmanr(y_train, y_pred)[0],2)
-   r2score = round(r2_score(y_train, y_pred),2)
+   # R2_Score=round(math.sqrt(mean_squared_error(y_train,  y_pred)),8)
+   pearson = round(stats.pearsonr(np.squeeze(y_train), np.squeeze(y_pred))[0],8)
+   kendalltau = round(stats.kendalltau(y_train, y_pred)[0],8)
+   spearmanr = round(stats.spearmanr(y_train, y_pred)[0],8)
+   r2score = round(r2_score(y_train, y_pred),8)
    
    if title =="Predictor training test":
        col="red"
@@ -522,7 +522,7 @@ def evaluate_model_predictor(y_train,  y_pred,title="Predictor training"):
    plt.plot(lst,  lst,  color='black', linewidth=0.6)
    plt.scatter(y_train, y_pred,  color=col, linewidth=0.8)
 
-   plt.title(f'(r={round(pearson,2)},rho={round(spearmanr,2)},tau={kendalltau})',y=1.02,size=28,fontname="Arial Black")#,R2_Score={R2_Score}
+   plt.title(f'(r={round(pearson,4)},rho={round(spearmanr,4)},tau={kendalltau})',y=1.02,size=28,fontname="Arial Black")#,R2_Score={R2_Score}
    plt.xlabel(f'True {search_metric}',fontsize=28,fontname="Arial Black")
    plt.ylabel(f'Predicted {search_metric}',fontsize=28,fontname="Arial Black")#,fontweight = 'bold'
    # plt.legend()

@@ -2,7 +2,6 @@
 
 from settings.config_file import *
  
-
 def create_e_search_space(a=0,b=1):   # a<b
 
     type_task=config['dataset']["type_task"]
@@ -14,13 +13,13 @@ def create_e_search_space(a=0,b=1):   # a<b
     attention= ["GCNConv","GENConv","SGConv","linear","GraphConv"]
 
     agregation=['add',"max","mean"]
-    activation=["Relu","Elu","linear","Softplus"]
-    multi_head= [1]
-    hidden_channels =[32]
-    normalizer=["GraphNorm","InstanceNorm"]
+    activation=["elu","leaky_relu","linear","relu","relu6","sigmoid","softplus","tanh"]
+    multi_head=  [1, 2, 3, 4,6]
+    hidden_channels =[8, 16, 32, 64,128]
+    normalizer=["GraphNorm","InstanceNorm","BatchNorm"]
     dropout = [0.0, 0.2, 0.4, 0.6]
-    sp={}  
-                                                 
+    sp={}
+
     sp['gnnConv1']=attention
     sp['gnnConv2']= attention
     sp['aggregation1']=agregation
@@ -38,10 +37,10 @@ def create_e_search_space(a=0,b=1):   # a<b
     sp['lr']= [0.01,0.001,0.005,0.0005]
     sp['weight_decay']=[0,0.001,0.0005]
     sp["optimizer"] = ["adam"]
-    sp['criterion'] = ['CrossEntropyLoss',"fn_loss"]
+    sp['criterion'] = ['CrossEntropyLoss',"fn_loss","MultiMarginLoss"]
 
     if type_task=='graph_classification':
-        sp['pooling'] = ["global_add_pool","global_max_pool"]
+        sp['pooling'] = ["global_add_pool","global_max_pool","global_max_pool"]
     # elif type_task=='node classification' or type_task=="link prediction":
     #   sp['normalize1'] =["False","InstanceNorm"]
     #     sp['normalize2'] =["False","InstanceNorm"]

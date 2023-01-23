@@ -34,7 +34,7 @@ def set_seed(num_seed=num_seed):
 project_root_dir = os.path.abspath(os.getcwd())
 
 type_task = "graph_classification"  # it could be "graph classification", "link prediction",node classification
-dataset_name = "DD"  # Citeseer,
+dataset_name = "IMDB-BINARY"  # Citeseer,
 
 
 # Second  level of  running configurations
@@ -63,8 +63,8 @@ def create_config_file():
         "z_final": 5,
         "nfcode": 56,  # number of digit for each function code when using embedding method
         "noptioncode": 8,
-        "sample_model_epochs": 20,
-        "topk_model_epochs": 200,
+        "sample_model_epochs":100,
+        "topk_model_epochs": 100,
         "best_model_epochs": 200,
         'search_metric':"accuracy_score",
         "encoding_method": "one_hot",  # ={one_hot, embedding,index_embedding}

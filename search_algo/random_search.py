@@ -52,15 +52,15 @@ if __name__ == "__main__":
      facc,stds=get_test_accuracy(best_model, dataset_root)
      # add_config("results","pred_time",prediction_time)
         
-     best_txt= f'    ***** Result report for {dataset_root[1]} with sample={config["param"]["n_sample"]} ****** \n -- Regressor = {regressor} | regressor r2 score1 ={round(predictor_score1,2)} and  Predictor r2 score2= :{round(predictor_score2,2)}) \
-     \n The best model is : {best_model} | accuracy:{facc} % +/-{round(stds,2)}%  \n \n'
+     best_txt= f'    ***** Result report for {dataset_root[1]} with sample={config["param"]["n_sample"]} ****** \n -- Regressor = {regressor} | regressor r2 score1 ={round(predictor_score1,4)} and  Predictor r2 score2= :{round(predictor_score2,4)}) \
+     \n The best model is : {best_model} | accuracy:{facc} % +/-{round(stds,4)}%  \n \n'
     
      recor_best_file="results/best_model.txt"
      with open(recor_best_file,'a+') as bestmodel:
         bestmodel.write(best_txt)
         
      print(best_txt)   
-     # total_time= round(time.time() - timestart,2)
-     write_results(dataset_name,round(time.time() - timestart,2),best_model,facc,stds,regressor,predictor_score1,predictor_score2)
+     # total_time= round(time.time() - timestart,4)
+     write_results(dataset_name,round(time.time() - timestart,4),best_model,facc,stds,regressor,predictor_score1,predictor_score2)
      
     

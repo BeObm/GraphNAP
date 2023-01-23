@@ -51,7 +51,7 @@ class ShuffleDataset(torch.utils.data.IterableDataset):
 def get_dataset(type_task, dataset_root, dataset_name,normalize_features=True, transform=None):
     set_seed()
     support_dataset_list ={"node_classification":["Cora", "Citeseer", "Pubmed"],
-                           "graph_classification":["DD","PROTEINS","ENZYMES","BZR","COLLAB","IMBD-BINARY"],
+                           "graph_classification":["DD","PROTEINS","ENZYMES","BZR","COLLAB","IMDB-BINARY"],
                            "graph_anomaly":["yelp","elliptic"]
                            }
     if dataset_name in support_dataset_list[type_task]:
@@ -65,7 +65,7 @@ def get_dataset(type_task, dataset_root, dataset_name,normalize_features=True, t
             elif transform is not None:
                 dataset.transform = transform
 
-        elif dataset_name in ["DD","PROTEINS","ENZYMES","BZR","COLLAB","IMBD-BINARY"]:
+        elif dataset_name in ["DD","PROTEINS","ENZYMES","BZR","COLLAB","IMDB-BINARY"]:
             dataset = TUDataset(root=dataset_root, name=dataset_name) #,use_node_attr=True,use_edge_attr=True
         elif dataset_name == 'molecule':
             dataset=MoleculeDataset(dataset_root, dataset_name)

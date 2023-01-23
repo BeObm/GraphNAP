@@ -59,10 +59,10 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
                    train_model(model,train_loader, criterion, optimizer)
                    performance_score= test_model(model, val_loader)
                 performance_record.append(performance_score[search_metric])
-            model_performance = round(stat.mean(performance_record),2)
+            model_performance = round(stat.mean(performance_record),8)
             
            
-            if model_performance =>best_performance:
+            if model_performance >= best_performance:
                 best_performance=model_performance
                 best_sample=copy.deepcopy(submodel)
                 best_sample[search_metric]=best_performance
@@ -187,7 +187,7 @@ def get_best_model(topk_list,option_decoder,dataset):
             performance= test_model(best_model, val_loader)
             performance_list.append(performance[search_metric])
 
-        performance = round(stat.mean(performance_list),2)
+        performance = round(stat.mean(performance_list),8)
 
 
                  
