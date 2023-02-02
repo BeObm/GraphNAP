@@ -64,7 +64,7 @@ def create_config_file():
         "z_final": 5,
         "nfcode": 56,  # number of digit for each function code when using embedding method
         "noptioncode": 8,
-        "sample_model_epochs":100,
+        "sample_model_epochs":2,
         "topk_model_epochs": 100,
         "best_model_epochs": 100,
         'search_metric':"balanced_accuracy_score",    #matthews_corr_coef, balanced_accuracy_score, accuracy_score

@@ -38,8 +38,8 @@ if __name__ == "__main__":
     e_search_space,option_decoder = create_e_search_space()
     # e_search_space,option_decoder = create_baseline_search_space()
 
+    # performance_records_path = get_performance_distributions(e_search_space, dataset)
     performance_records_path = get_performance_distributions(e_search_space, dataset)
-
     TopK_final = get_prediction(performance_records_path,e_search_space)
     best_model= get_best_model(TopK_final,option_decoder,dataset)
     total_search_time = round(time.time() - timestart, 2)
