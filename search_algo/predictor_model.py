@@ -531,3 +531,5 @@ def evaluate_model_predictor(y_train,  y_pred,title="Predictor training"):
    plt.savefig(f'{config["path"]["plots_folder"]}/{title}_{dataset_name}.pdf',bbox_inches="tight",dpi=1000)
    return r2score,pearson,kendalltau,spearmanr
 
+
+# print()
