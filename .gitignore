@@ -9,3 +9,12 @@ data/graph_anomaly/yelp.dat
 *.pyc
 *.pyc
 *.txt
+AMNet-main/__init__.py
+AMNet-main/AMNet.gif
+AMNet-main/bernconv.py
+AMNet-main/config.py
+AMNet-main/dgraphfin.py
+AMNet-main/model.py
+AMNet-main/README.md
+AMNet-main/train.py
+AMNet-main/utils.py
