@@ -33,8 +33,8 @@ def set_seed(num_seed=num_seed):
 
 project_root_dir = os.path.abspath(os.getcwd())
 
-type_task = "graph_anomaly"  # it could be "graph_classification", "link_prediction",node_classification
-dataset_name = "elliptic"  # Citeseer,
+type_task = "graph_classification"  # it could be "graph_classification", "link_prediction",node_classification
+dataset_name = "BZR"  # Citeseer,
 
 
 # Second  level of  running configurations
