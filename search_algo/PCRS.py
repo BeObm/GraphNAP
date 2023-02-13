@@ -58,6 +58,7 @@ def get_performance_distributions(e_search_space,dataset):  # get performance di
                 for epoch in range(epochs):                                            
                    train_model(model,train_loader, criterion, optimizer)
                    performance_score= test_model(model, val_loader)
+                print(f"this is the variable {search_metric}")
                 performance_record.append(performance_score[search_metric])
             model_performance = round(stat.mean(performance_record),8)
             

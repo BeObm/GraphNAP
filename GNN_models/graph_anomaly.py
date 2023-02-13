@@ -242,6 +242,14 @@ def test_function(model, data, typ="val"):
     pred = out.argmax(dim=1)
     auc_roc, auc_pr = aucPerformance(data.y[mask], pred[mask])
 
+    acc_score_ = acc_score(data.y[mask], pred[mask])
+    balanced_acc_score_ = balanced_acc_score(data.y[mask], pred[mask])
+    matthews_corrcoef = mcc_score(data.y[mask],pred[mask])
+
+    performance_scores["accuracy_score"] = acc_score_
+    performance_scores["balanced_accuracy_score"] = balanced_acc_score_
+    performance_scores["matthews_corr_coef"] = matthews_corrcoef
+
     # test_correct= pred[mask]==data.y[mask]
     # test_acc=int(test_correct.sum())/int(mask.sum())
     return auc_roc, auc_pr
