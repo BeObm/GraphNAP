@@ -159,7 +159,7 @@ def predict_accuracy_using_graph(model,graphLoader):
 
         df = pd.DataFrame.from_dict(prediction_dict)
         TopK=df.nlargest(n=k,columns=search_metric,keep="all")
-        TopK=df[:k]
+        TopK=TopK[:k]
         # print(TopK)
         return TopK
 
